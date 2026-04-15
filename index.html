@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sales Analytics | Classic Models</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+
+<body>
+
+  <header>
+    <div class="nav-logo">
+      <span class="nav-dot" aria-hidden="true"></span>
+      <span class="nav-title">Sales Analytics</span>
+    </div>
+    <div class="nav-right">
+      <nav class="nav-pills" aria-label="Tech stack">
+        <span class="pill">MySQL</span>
+        <span class="pill">Python</span>
+        <span class="pill">Chart.js</span>
+      </nav>
+      <button id="theme-toggle" class="toggle-btn" aria-label="Toggle theme">
+        <i data-lucide="sun"></i>
+      </button>
+    </div>
+  </header>
+
+  <main>
+
+    <section class="hero" aria-labelledby="hero-heading">
+      <p class="hero-eyebrow">End-to-end analytics</p>
+      <h1 id="hero-heading">Sales <span class="highlight">Analytics</span></h1>
+      <p class="hero-subtitle">Exploring what drives revenue in a global scale-model retailer</p>
+
+      <!-- Inline stats strip -->
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-val">$9.6M</div>
+          <div class="hero-stat-label">TOTAL REVENUE</div>
+        </div>
+        <div class="hero-divider"></div>
+        <div class="hero-stat">
+          <div class="hero-stat-val">326</div>
+          <div class="hero-stat-label">ORDERS SHIPPED</div>
+        </div>
+        <div class="hero-divider"></div>
+        <div class="hero-stat">
+          <div class="hero-stat-val">USA</div>
+          <div class="hero-stat-label">TOP MARKET</div>
+        </div>
+        <div class="hero-divider"></div>
+        <div class="hero-stat">
+          <div class="hero-stat-val">92.94%</div>
+          <div class="hero-stat-label">FULFILLMENT RATE</div>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="charts-heading">
+      <div class="section-header reveal">
+        <p class="section-label">Visualizations</p>
+        <h2 class="section-title" id="charts-heading">Analysis Results</h2>
+      </div>
+
+      <div class="charts-grid reveal-stagger">
+
+        <article class="chart-card reveal">
+          <div class="chart-card-header">
+            <h3 class="chart-title">Revenue by Country</h3>
+            <div class="chart-stat">
+              <span class="chart-stat-value">$3.0M</span>
+              <span class="chart-stat-label">USA leads</span>
+            </div>
+          </div>
+          <div class="chart-canvas-wrapper">
+            <canvas id="chart-countries" aria-label="Horizontal bar chart: revenue by country"></canvas>
+          </div>
+        </article>
+
+        <article class="chart-card reveal">
+          <div class="chart-card-header">
+            <h3 class="chart-title">Top Products by Units Sold</h3>
+            <div class="chart-stat">
+              <span class="chart-stat-value chart-stat-value--purple">1,720</span>
+              <span class="chart-stat-label">Ferrari 360</span>
+            </div>
+          </div>
+          <div class="chart-canvas-wrapper">
+            <canvas id="chart-products" aria-label="Horizontal bar chart: top products by units sold"></canvas>
+          </div>
+        </article>
+
+        <article class="chart-card reveal">
+          <div class="chart-card-header">
+            <h3 class="chart-title">Monthly Revenue Trend</h3>
+            <div class="chart-stat">
+              <span class="chart-stat-value">$935K</span>
+              <span class="chart-stat-label">Nov 2004 peak</span>
+            </div>
+          </div>
+          <div class="chart-canvas-wrapper chart-canvas-wrapper--tall">
+            <canvas id="chart-monthly" aria-label="Line chart: monthly revenue trend"></canvas>
+          </div>
+        </article>
+
+        <article class="chart-card reveal">
+          <div class="chart-card-header">
+            <h3 class="chart-title">Revenue by Product Line</h3>
+            <div class="chart-stat">
+              <span class="chart-stat-value">40.9%</span>
+              <span class="chart-stat-label">Classic Cars</span>
+            </div>
+          </div>
+          <div class="chart-canvas-wrapper chart-canvas-wrapper--doughnut">
+            <canvas id="chart-product-lines" aria-label="Doughnut chart: revenue by product line"></canvas>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <section aria-labelledby="findings-heading">
+      <div class="section-header reveal">
+        <p class="section-label">Insights</p>
+        <h2 class="section-title" id="findings-heading">Key Findings</h2>
+      </div>
+
+      <div class="findings-grid reveal-stagger">
+
+        <article class="finding-card reveal">
+          <div class="finding-icon-box" aria-hidden="true">
+            <i data-lucide="globe"></i>
+          </div>
+          <div class="finding-content">
+            <div class="finding-number">31.6%</div>
+            <p class="finding-title">One country drives nearly a third of all revenue</p>
+            <p class="finding-desc">USA generated $3M while no other market exceeded $1M. The top 3 countries account for over half of total revenue.</p>
+          </div>
+        </article>
+
+        <article class="finding-card reveal">
+          <div class="finding-icon-box" aria-hidden="true">
+            <i data-lucide="trending-up"></i>
+          </div>
+          <div class="finding-content">
+            <div class="finding-number">$3.6M</div>
+            <p class="finding-title">Classic Cars outsell every other category combined</p>
+            <p class="finding-desc">At 40.9% of total revenue, this single line generates more than the next three categories put together.</p>
+          </div>
+        </article>
+
+        <article class="finding-card reveal">
+          <div class="finding-icon-box" aria-hidden="true">
+            <i data-lucide="calendar"></i>
+          </div>
+          <div class="finding-content">
+            <div class="finding-number">174%</div>
+            <p class="finding-title">Sales spike every Q4 — not a coincidence</p>
+            <p class="finding-desc">November 2004 peaked at $935K — 174% above the monthly average. The same pattern repeats in October every year.</p>
+          </div>
+        </article>
+
+        <article class="finding-card reveal">
+          <div class="finding-icon-box" aria-hidden="true">
+            <i data-lucide="star"></i>
+          </div>
+          <div class="finding-content">
+            <div class="finding-number">1,720</div>
+            <p class="finding-title">One product dominates units sold by a wide margin</p>
+            <p class="finding-desc">The 1992 Ferrari 360 Spider sold 1,720 units — 62% more than the second best-selling product.</p>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <p class="footer-left">Cleyri Solano · 2026</p>
+      <div class="footer-right">
+        <span class="footer-tech-pill">MySQL</span>
+        <span class="footer-tech-pill">Python</span>
+        <span class="footer-tech-pill">Chart.js</span>
+        <span class="footer-tech-pill">HTML/CSS</span>
+        <a
+          href="https://github.com/cleyri-solano"
+          class="footer-github"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="GitHub profile"
+        >GitHub</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <script src="js/script.js"></script>
+</body>
+</html>
