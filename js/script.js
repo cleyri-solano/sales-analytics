@@ -1,7 +1,7 @@
 // @ts-nocheck
 /* global Chart, lucide */
 
-const API_BASE = ''; // Cambiar a la URL de Railway al hacer deploy
+const API_BASE = 'https://sales-analytics-production-3196.up.railway.app';
 
 /* ---- Counter animation ---- */
 function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
