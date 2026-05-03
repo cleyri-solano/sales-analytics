@@ -1,10 +1,10 @@
 // @ts-nocheck
 /* global Chart, lucide */
 
-/* --- Counter Animations --- */
-function easeOutCubic(t) {
-  return 1 - Math.pow(1 - t, 3);
-}
+const API_BASE = ''; // Cambiar a la URL de Railway al hacer deploy
+
+/* ---- Counter animation ---- */
+function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
 
 function animateCounter(el) {
   const target   = parseFloat(el.dataset.count);
@@ -12,27 +12,23 @@ function animateCounter(el) {
   const suffix   = el.dataset.suffix || '';
   const decimals = Number.isInteger(target) ? 0 : (String(target).split('.')[1] || '').length;
   const duration = 1400;
-  let   start    = null;
+  let start      = null;
 
   function step(ts) {
     if (!start) start = ts;
     const progress = Math.min((ts - start) / duration, 1);
     const value    = easeOutCubic(progress) * target;
     el.textContent = prefix + value.toFixed(decimals) + suffix;
-    if (progress < 1) {
-      requestAnimationFrame(step);
-    } else {
-      el.textContent = prefix + target.toFixed(decimals) + suffix;
-    }
+    if (progress < 1) requestAnimationFrame(step);
+    else el.textContent = prefix + target.toFixed(decimals) + suffix;
   }
   requestAnimationFrame(step);
 }
 
-/* --- Scroll Reveal --- */
+/* ---- Scroll reveal ---- */
 function initScrollReveal() {
   const els = document.querySelectorAll('.reveal');
   if (!els.length) return;
-
   const obs = new IntersectionObserver(
     (entries) => entries.forEach((e) => {
       if (e.isIntersecting) { e.target.classList.add('is-visible'); obs.unobserve(e.target); }
@@ -42,11 +38,10 @@ function initScrollReveal() {
   els.forEach((el) => obs.observe(el));
 }
 
-/* --- Counter Trigger --- */
+/* ---- Counter trigger ---- */
 function initCounters() {
   const counters = document.querySelectorAll('.stat-value[data-count]');
   if (!counters.length) return;
-
   const obs = new IntersectionObserver(
     (entries) => entries.forEach((e) => {
       if (e.isIntersecting) { animateCounter(e.target); obs.unobserve(e.target); }
@@ -56,7 +51,7 @@ function initCounters() {
   counters.forEach((el) => obs.observe(el));
 }
 
-/* --- Smooth Scroll --- */
+/* ---- Smooth scroll ---- */
 function initSmoothScroll() {
   document.querySelectorAll('a[href^="#"]').forEach((a) => {
     a.addEventListener('click', (e) => {
@@ -68,7 +63,7 @@ function initSmoothScroll() {
   });
 }
 
-/* --- Theme Toggle --- */
+/* ---- Theme toggle ---- */
 function initThemeToggle() {
   const btn  = document.getElementById('theme-toggle');
   const html = document.documentElement;
@@ -99,9 +94,7 @@ function initThemeToggle() {
   });
 }
 
-/* --- Chart.js Theme Helpers --- */
-
-/* --- Obtiene colores segun el tema actual --- */
+/* ---- Chart theme helpers ---- */
 function getThemeColors() {
   const light = document.documentElement.getAttribute('data-theme') === 'light';
   return {
@@ -110,10 +103,8 @@ function getThemeColors() {
   };
 }
 
-/* --- Instancias de charts para actualizar temas --- */
 const charts = {};
 
-/* --- Re-aplicar colores de tema a los charts --- */
 function updateChartThemes() {
   const { grid, tick } = getThemeColors();
   Object.values(charts).forEach((chart) => {
@@ -126,7 +117,7 @@ function updateChartThemes() {
   });
 }
 
-/* --- Configuracion compartida de tooltips --- */
+/* ---- Shared tooltip config ---- */
 const TOOLTIP = {
   backgroundColor: '#1e1e1e',
   borderColor:     '#00d4ff',
@@ -142,41 +133,39 @@ const TOOLTIP = {
 function fmtUSD(v) { return '$' + v.toLocaleString('en-US'); }
 function fmtNum(v) { return v.toLocaleString('en-US'); }
 
-/* --- Chart 1: Revenue by Country --- */
-function initChartCountries() {
+/* ---- Chart 1: Revenue by Country ---- */
+function initChartCountries(data) {
   const ctx = document.getElementById('chart-countries');
   if (!ctx) return;
   const { grid, tick } = getThemeColors();
+  const labels = data.map(r => r.country);
+  const values = data.map(r => Number(r.revenue));
 
-  // @ts-ignore
   charts.countries = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: ['USA', 'France', 'Spain', 'Australia', 'New Zealand', 'UK', 'Italy', 'Finland', 'Singapore', 'Canada'],
+      labels,
       datasets: [{
         label:           'Revenue',
-        data:            [3032204, 965750, 947470, 509385, 416114, 391503, 360616, 295149, 263997, 205911],
+        data:            values,
         backgroundColor: 'rgba(0, 212, 255, 0.8)',
         borderWidth:     0,
         borderRadius:    4,
       }],
     },
     options: {
-      responsive: true,
+      responsive:          true,
       maintainAspectRatio: false,
-      animation: { duration: 1000, easing: 'easeOutQuart' },
+      animation:           { duration: 1000, easing: 'easeOutQuart' },
       indexAxis: 'y',
       plugins: {
-        legend: { display: false },
-        tooltip: {
-          ...TOOLTIP,
-          callbacks: { label: (c) => '  ' + fmtUSD(c.raw) },
-        },
+        legend:  { display: false },
+        tooltip: { ...TOOLTIP, callbacks: { label: (c) => '  ' + fmtUSD(c.raw) } },
       },
       scales: {
         x: {
           grid:  { color: grid },
-          ticks: { color: tick, font: { family: 'Inter', size: 11 }, callback: (v) => '$' + (v / 1000000).toFixed(1) + 'M' },
+          ticks: { color: tick, font: { family: 'Inter', size: 11 }, callback: (v) => '$' + (v / 1e6).toFixed(1) + 'M' },
         },
         y: {
           grid:  { color: grid },
@@ -185,49 +174,41 @@ function initChartCountries() {
       },
     },
   });
+
+  const el = document.getElementById('cstat-country');
+  const lb = document.getElementById('cstat-country-lbl');
+  if (el && data[0]) el.textContent = '$' + (values[0] / 1e6).toFixed(1) + 'M';
+  if (lb && data[0]) lb.textContent = labels[0] + ' leads';
 }
 
-/* --- Chart 2: Top Products by Units Sold --- */
-function initChartProducts() {
+/* ---- Chart 2: Top Products by Units Sold ---- */
+function initChartProducts(data) {
   const ctx = document.getElementById('chart-products');
   if (!ctx) return;
   const { grid, tick } = getThemeColors();
+  const labels = data.map(r => r.productName);
+  const values = data.map(r => Number(r.units));
 
-  // @ts-ignore
   charts.products = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: [
-        '1992 Ferrari 360 Spider Red',
-        '1937 Lincoln Berline',
-        '1913 Ford Model T Speedster',
-        '1957 Chevy Pickup',
-        '1960 BSA Gold Star DBD34',
-        '1957 Corvette Convertible',
-        '1956 Porsche 356A Coupe',
-        '2002 Suzuki XREO',
-        '1997 BMW R 1100 S',
-        '2002 Yamaha YZR M1',
-      ],
+      labels,
       datasets: [{
         label:           'Units Sold',
-        data:            [1720, 1060, 1028, 1023, 1015, 1013, 1013, 1007, 998, 992],
+        data:            values,
         backgroundColor: 'rgba(124, 58, 237, 0.8)',
         borderWidth:     0,
         borderRadius:    4,
       }],
     },
     options: {
-      responsive: true,
+      responsive:          true,
       maintainAspectRatio: false,
-      animation: { duration: 1000, easing: 'easeOutQuart' },
+      animation:           { duration: 1000, easing: 'easeOutQuart' },
       indexAxis: 'y',
       plugins: {
-        legend: { display: false },
-        tooltip: {
-          ...TOOLTIP,
-          callbacks: { label: (c) => '  ' + fmtNum(c.raw) + ' units' },
-        },
+        legend:  { display: false },
+        tooltip: { ...TOOLTIP, callbacks: { label: (c) => '  ' + fmtNum(c.raw) + ' units' } },
       },
       scales: {
         x: {
@@ -248,29 +229,24 @@ function initChartProducts() {
       },
     },
   });
+
+  const el = document.getElementById('cstat-products');
+  const lb = document.getElementById('cstat-products-lbl');
+  if (el && data[0]) {
+    el.textContent = fmtNum(values[0]);
+    el.classList.add('chart-stat-value--purple');
+  }
+  if (lb && data[0]) lb.textContent = labels[0].split(' ').slice(1, 4).join(' ');
 }
 
-/* --- Chart 3: Monthly Revenue Trend --- */
-function initChartMonthly() {
+/* ---- Chart 3: Monthly Revenue Trend ---- */
+function initChartMonthly(data) {
   const ctx = document.getElementById('chart-monthly');
   if (!ctx) return;
   const { grid, tick } = getThemeColors();
 
-  const labels = [
-    '2003-01','2003-02','2003-03','2003-04','2003-05','2003-06',
-    '2003-07','2003-08','2003-09','2003-10','2003-11','2003-12',
-    '2004-01','2004-02','2004-03','2004-04','2004-05','2004-06',
-    '2004-07','2004-08','2004-09','2004-10','2004-11','2004-12',
-    '2005-01','2005-02','2005-03','2005-04','2005-05',
-  ];
-
-  const data = [
-    129753, 145062, 159721, 187808, 179370, 166810,
-    187731, 197809, 263973, 477532, 457861, 261876,
-    205480, 248841, 268492, 208411, 273438, 213092,
-    325563, 419327, 283799, 500233, 935712, 428838,
-    268156, 317192, 312743, 227427, 155335,
-  ];
+  const labels = data.map(r => `${r.year}-${String(r.month).padStart(2, '0')}`);
+  const values = data.map(r => Number(r.revenue));
 
   const gradient = ctx.getContext('2d').createLinearGradient(0, 0, 0, 215);
   gradient.addColorStop(0, 'rgba(0, 212, 255, 0.15)');
@@ -282,7 +258,7 @@ function initChartMonthly() {
       labels,
       datasets: [{
         label:                'Revenue',
-        data,
+        data:                 values,
         borderColor:          '#00d4ff',
         borderWidth:          2,
         pointRadius:          3,
@@ -294,51 +270,51 @@ function initChartMonthly() {
       }],
     },
     options: {
-      responsive: true,
+      responsive:          true,
       maintainAspectRatio: false,
-      animation: { duration: 1000, easing: 'easeOutQuart' },
+      animation:           { duration: 1000, easing: 'easeOutQuart' },
       plugins: {
-        legend: { display: false },
-        tooltip: {
-          ...TOOLTIP,
-          callbacks: { label: (c) => '  ' + fmtUSD(c.raw) },
-        },
+        legend:  { display: false },
+        tooltip: { ...TOOLTIP, callbacks: { label: (c) => '  ' + fmtUSD(c.raw) } },
       },
       scales: {
         x: {
           grid:  { color: grid },
           ticks: {
-            color: tick,
-            font:  { family: 'Inter', size: 11 },
+            color:       tick,
+            font:        { family: 'Inter', size: 11 },
             maxRotation: 0,
-            // Show only the year label on the first month of each year
-            callback: (_val, index) => labels[index].endsWith('-01') ? labels[index].split('-')[0] : null,
+            callback:    (_val, index) => labels[index].endsWith('-01') ? labels[index].split('-')[0] : null,
           },
         },
         y: {
           grid:  { color: grid },
-          ticks: {
-            color: tick,
-            font:  { family: 'Inter', size: 11 },
-            callback: (v) => '$' + (v / 1000).toFixed(0) + 'K',
-          },
+          ticks: { color: tick, font: { family: 'Inter', size: 11 }, callback: (v) => '$' + (v / 1000).toFixed(0) + 'K' },
         },
       },
     },
   });
+
+  const peakIdx = values.indexOf(Math.max(...values));
+  const el = document.getElementById('cstat-monthly');
+  const lb = document.getElementById('cstat-monthly-lbl');
+  if (el && peakIdx >= 0) el.textContent = '$' + (values[peakIdx] / 1000).toFixed(0) + 'K';
+  if (lb && peakIdx >= 0) lb.textContent = labels[peakIdx] + ' peak';
 }
 
-/* --- Chart 4: Revenue by Product Line --- */
-function initChartProductLines() {
+/* ---- Chart 4: Revenue by Product Line ---- */
+function initChartProductLines(data) {
   const ctx = document.getElementById('chart-product-lines');
   if (!ctx) return;
+  const labels = data.map(r => r.productLine);
+  const values = data.map(r => Number(r.revenue));
 
   charts.productLines = new Chart(ctx, {
     type: 'doughnut',
     data: {
-      labels: ['Classic Cars', 'Vintage Cars', 'Motorcycles', 'Trucks & Buses', 'Planes', 'Ships', 'Trains'],
+      labels,
       datasets: [{
-        data: [3623600, 1643172, 1084927, 949004, 832730, 556629, 175030],
+        data:            values,
         backgroundColor: ['#00d4ff', '#a855f7', '#f97316', '#22c55e', '#ec4899', '#eab308', '#ef4444'],
         borderColor:     'transparent',
         borderWidth:     0,
@@ -346,9 +322,9 @@ function initChartProductLines() {
       }],
     },
     options: {
-      responsive: true,
+      responsive:          true,
       maintainAspectRatio: false,
-      animation: { duration: 1000, easing: 'easeOutQuart' },
+      animation:           { duration: 1000, easing: 'easeOutQuart' },
       cutout: '62%',
       plugins: {
         legend: {
@@ -374,17 +350,81 @@ function initChartProductLines() {
       scales: {},
     },
   });
+
+  const total = values.reduce((a, b) => a + b, 0);
+  const el = document.getElementById('cstat-lines');
+  const lb = document.getElementById('cstat-lines-lbl');
+  if (el && data[0]) el.textContent = ((values[0] / total) * 100).toFixed(1) + '%';
+  if (lb && data[0]) lb.textContent = labels[0];
 }
 
-/* --- Init --- */
+/* ---- Render hero stats from API ---- */
+function renderStats(stats) {
+  const el = (id) => document.getElementById(id);
+  const total = Number(stats.totalRevenue);
+  if (el('stat-revenue'))     el('stat-revenue').textContent     = '$' + (total / 1e6).toFixed(1) + 'M';
+  if (el('stat-orders'))      el('stat-orders').textContent      = stats.shippedOrders;
+  if (el('stat-market'))      el('stat-market').textContent      = stats.topMarket;
+  if (el('stat-fulfillment')) el('stat-fulfillment').textContent = stats.fulfillmentRate + '%';
+}
+
+/* ---- Render AI insights from Claude ---- */
+function renderInsights(insights) {
+  const grid = document.querySelector('.findings-grid');
+  if (!grid || !insights) return;
+
+  grid.innerHTML = insights.map(i => `
+    <article class="finding-card reveal is-visible">
+      <div class="finding-icon-box" aria-hidden="true">
+        <i data-lucide="${i.icon}"></i>
+      </div>
+      <div class="finding-content">
+        <div class="finding-number">${i.number}</div>
+        <p class="finding-title">${i.title}</p>
+        <p class="finding-desc">${i.description}</p>
+      </div>
+    </article>
+  `).join('');
+
+  lucide.createIcons();
+}
+
+/* ---- Load all data from the backend API ---- */
+async function loadData() {
+  try {
+    const [revenue, products, monthly, productLines, stats] = await Promise.all([
+      fetch(`${API_BASE}/api/revenue`).then(r => r.json()),
+      fetch(`${API_BASE}/api/products`).then(r => r.json()),
+      fetch(`${API_BASE}/api/monthly`).then(r => r.json()),
+      fetch(`${API_BASE}/api/product-lines`).then(r => r.json()),
+      fetch(`${API_BASE}/api/stats`).then(r => r.json()),
+    ]);
+
+    renderStats(stats);
+    initChartCountries(revenue);
+    initChartProducts(products);
+    initChartMonthly(monthly);
+    initChartProductLines(productLines);
+  } catch (e) {
+    console.error('Failed to load data:', e);
+  }
+
+  // Insights loads separately — Claude API may take a few seconds
+  fetch(`${API_BASE}/api/insights`)
+    .then(r => r.json())
+    .then(data => renderInsights(data.insights))
+    .catch(() => {
+      const grid = document.querySelector('.findings-grid');
+      if (grid) grid.innerHTML = '<p class="loading-insights">Could not load AI insights.</p>';
+    });
+}
+
+/* ---- Init ---- */
 document.addEventListener('DOMContentLoaded', () => {
-  initThemeToggle();    // sets button text + updateChartThemes()
+  initThemeToggle();
   initScrollReveal();
   initCounters();
   initSmoothScroll();
-  initChartCountries();
-  initChartProducts();
-  initChartMonthly();
-  initChartProductLines();
-  lucide.createIcons(); // render all data-lucide icons (finding cards, etc.)
+  loadData();
+  lucide.createIcons();
 });
