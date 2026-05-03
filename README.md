@@ -1,61 +1,80 @@
 # Sales Analytics — Classic Models
 
-End-to-end sales analytics project built on the Classic Models sample database. Covers data exploration in MySQL, exploratory analysis in Python, and an interactive dashboard in vanilla HTML/CSS/JS.
+End-to-end sales analytics dashboard with a Node.js/Express backend, MySQL database, and AI-generated business insights powered by OpenAI.
 
-**Stack:** MySQL · Python (pandas, matplotlib) · Chart.js · Lucide Icons
+**Stack:** MySQL · Node.js · Express · OpenAI API · Chart.js · HTML/CSS
+
+**Live demo:** [cleyri-solano.github.io/sales-analytics](https://cleyri-solano.github.io/sales-analytics)  
+**Backend API:** [sales-analytics-production-3196.up.railway.app](https://sales-analytics-production-3196.up.railway.app)
 
 ---
 
-## Setup
+## Architecture
 
-**1. Import the database**
-```sql
-source data/mysqlsampledatabase.sql
+```
+Frontend (GitHub Pages)
+  └── HTML/CSS/JS — consumes the REST API
+
+Backend (Railway)
+  ├── Express API — queries MySQL and returns JSON
+  └── OpenAI integration — generates business insights from live data
 ```
 
-**2. Create a `.env` file in the project root**
+---
+
+## API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/stats` | Summary stats (revenue, orders, fulfillment rate) |
+| GET | `/api/revenue` | Top 10 countries by revenue |
+| GET | `/api/products` | Top 10 products by units sold |
+| GET | `/api/monthly` | Monthly revenue trend |
+| GET | `/api/product-lines` | Revenue breakdown by product line |
+| GET | `/api/insights` | AI-generated business insights (OpenAI, cached 1h) |
+
+---
+
+## Local Setup
+
+**1. Import the database**
+```bash
+mysql -u root -p < data/mysqlsampledatabase.sql
+```
+
+**2. Create a `.env` file**
 ```
 DB_HOST=localhost
 DB_USER=root
 DB_PASSWORD=your_password
 DB_NAME=classicmodels
+OPENAI_API_KEY=your_openai_key
 ```
 
-**3. Install Python dependencies**
+**3. Install dependencies and run**
 ```bash
-python -m venv venv
-source venv/bin/activate   # Windows: venv\Scripts\activate
-pip install mysql-connector-python pandas matplotlib python-dotenv
+npm install
+node server.js
+# → http://localhost:3000
 ```
-
-**4. Run the analysis**
-```bash
-cd python
-python analysis.py
-# Charts are saved to python/charts/
-```
-
-**5. View the dashboard**
-
-Open `index.html` in a browser — no build step or server needed.
 
 ---
 
-## SQL Queries
+## Project Structure
 
-Seven queries against the `classicmodels` schema, all filtered to `status = 'Shipped'`: revenue by country, top 10 products by units sold, monthly revenue trend, employee performance, top 10 customers by value, revenue by product line, and orders by status breakdown.
-
----
-
-## Dashboard
-
-Four interactive Chart.js charts (revenue by country, top products, monthly trend, product line doughnut), dark/light mode with `localStorage` persistence, scroll reveal animations, and a key findings section.
-
-**Highlights from the data:**
-- USA drives 31.6% of total revenue — no other market exceeds $1M
-- Classic Cars account for 40.9% of revenue, more than all other lines combined
-- Sales spike every Q4 — November 2004 peaked at $935K (174% above average)
-- The 1992 Ferrari 360 Spider sold 1,720 units, 62% more than the next product
+```
+sales-analytics/
+├── data/
+│   ├── mysqlsampledatabase.sql   # Database schema and seed data
+│   └── queries.sql               # Reference SQL queries
+├── css/
+│   └── styles.css
+├── js/
+│   └── script.js                 # Fetches API, renders charts
+├── index.html                    # Frontend dashboard
+├── server.js                     # Express backend
+└── package.json
+```
 
 ---
 
